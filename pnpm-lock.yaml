@@ -11,6 +11,9 @@ dependencies:
   framer-motion:
     specifier: ^11.2.12
     version: 11.2.12(react-dom@18.3.1)(react@18.3.1)
+  ibantools:
+    specifier: ^4.5.1
+    version: 4.5.1
   react:
     specifier: ^18.3.1
     version: 18.3.1
@@ -4078,6 +4081,10 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       function-bind: 1.1.2
+
+  /ibantools@4.5.1:
+    resolution: {integrity: sha512-DfKQpLlFq9yEUIEnFuCJzss3XavD7iHZTU5PyqXiAJ+rmaMp+NFP3hboumHKuK8nZjuOJg93WemTzcQ5b9jOZA==}
+    dev: false
 
   /ignore@5.3.1:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
