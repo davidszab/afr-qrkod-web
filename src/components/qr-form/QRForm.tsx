@@ -82,6 +82,11 @@ interface BICInputProps {
 
 function BICInput({bic, setBic, bicInvalid, setBicInvalid}: BICInputProps) {
     const validate = () => {
+        if(bic == ""){
+          setBicInvalid(false);
+          return;
+        }
+        
         const res = validateBIC(bic);
         setBicInvalid(!res.valid);
     };
