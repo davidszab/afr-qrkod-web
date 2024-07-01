@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Divider, Spinner, Card, CardHeader, CardBody, Input, Textarea, DatePicker} from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
-import { composeIBAN } from "ibantools";
+import { composeIBAN, validateBIC } from "ibantools";
 import { getBankByBranchOfficeCode } from "../../util/banks";
 import { InstantTransferQR } from "mnb-afr-qr";
 import QRCode from "qrcode";
@@ -39,17 +39,17 @@ function validateIBANorBBAN(input: string): { valid: boolean; iban?: string } {
 interface IBANInputProps {
     iban: string,
     setIban: (i: string) => void,
+    ibanInvalid: boolean,
+    setIbanInvalid: (i: boolean) => void,
     setBic: (b: string) => void,
     setBank: (b: string) => void
 }
 
-function IBANInput({iban, setIban, setBic, setBank}: IBANInputProps) {
-  const [invalid, setInvalid] = useState(false);
-
+function IBANInput({iban, setIban, ibanInvalid, setIbanInvalid, setBic, setBank}: IBANInputProps) {
   const validate = () => {
     const { valid, iban: newIban } = validateIBANorBBAN(iban);
     if (newIban) setIban(newIban);
-    setInvalid(!valid);
+    setIbanInvalid(!valid);
 
     if(!valid) return;
 
@@ -66,16 +66,47 @@ function IBANInput({iban, setIban, setBic, setBank}: IBANInputProps) {
       isRequired={true}
       errorMessage="Érvénytelen számlaszám!"
       value={iban}
-      isInvalid={invalid}
+      isInvalid={ibanInvalid}
       onValueChange={setIban}
       onBlur={validate}
     />
   );
 }
 
+interface BICInputProps {
+    bic: string
+    setBic: (b: string) => void,
+    bicInvalid: boolean,
+    setBicInvalid: (i: boolean) => void,
+}
+
+function BICInput({bic, setBic, bicInvalid, setBicInvalid}: BICInputProps) {
+    const validate = () => {
+        const res = validateBIC(bic);
+        setBicInvalid(!res.valid);
+    };
+
+    useEffect(validate, [bic]);
+  
+    return (
+      <Input
+        type="text"
+        label="BIC"
+        isRequired={true}
+        errorMessage="Érvénytelen BIC!"
+        value={bic}
+        isInvalid={bicInvalid}
+        onValueChange={setBic}
+        onBlur={validate}
+      />
+    );
+  }
+
 export default function QRForm() {
   const [iban, setIban] = useState("");
+  const [ibanInvalid, setIbanInvalid] = useState(false);
   const [bic, setBic] = useState("");
+  const [bicInvalid, setBicInvalid] = useState(false);
   const [bank, setBank] = useState("");
   const [name, setName] = useState("");
   const [date, setDate] = useState(today(getLocalTimeZone()).add({ months: 1 }));
@@ -99,7 +130,7 @@ export default function QRForm() {
 
     setQRState(QRState.InProgress);
     timeoutRef.current = setTimeout(() => {
-      if (!bic || !iban || !name) {
+      if (!iban  || ibanInvalid || !bic || bicInvalid || !name) {
         return;
       }
 
@@ -159,15 +190,16 @@ export default function QRForm() {
             <IBANInput
               iban={iban}
               setIban={setIban}
+              ibanInvalid={ibanInvalid}
+              setIbanInvalid={setIbanInvalid}
               setBic={setBic}
               setBank={setBank}
             />
-            <Input
-              type="text"
-              label="BIC"
-              isRequired={true}
-              value={bic}
-              onValueChange={setBic}
+            <BICInput 
+                bic={bic}
+                setBic={setBic}
+                bicInvalid={bicInvalid}
+                setBicInvalid={setBicInvalid}
             />
             <Input
               type="text"
