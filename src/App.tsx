@@ -1,3 +1,4 @@
+import QRForm from "./components/qr-form/QRForm"
 
 
 
@@ -5,7 +6,7 @@ function App() {
 
   return (
     <>
-      <h1>Hello World!</h1>
+    <QRForm/>
     </>
   )
 }
